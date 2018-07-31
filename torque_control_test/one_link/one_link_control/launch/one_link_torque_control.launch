@@ -1,0 +1,19 @@
+<launch>
+
+  <!-- Load joint controller configurations from YAML file to parameter server -->
+  <rosparam file="$(find one_link_control)/config/one_link_torque_control.yaml" command="load"/>
+
+  <!-- load the controllers -->
+  <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false"
+	output="screen" ns="/one_link" args="joint_state_controller
+					  joint1_torque_controller"/>
+
+  <!-- convert joint states to TF transforms for rviz, etc -->
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"
+	respawn="false" output="screen">
+    <remap from="/joint_states" to="/one_link/joint_states" />
+  </node>
+
+  <node name="one_link_gc" pkg="one_link_control" type="one_link_gc.py"/>
+
+</launch>
